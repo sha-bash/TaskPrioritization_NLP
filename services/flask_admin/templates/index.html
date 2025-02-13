@@ -1,55 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Админ-панель</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="{{ url_for('admin.static', filename='css/admin.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .status p {
+            font-size: 1.1rem;
+        }
+        .btn-toggle {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .logout-btn {
+            border-radius: 20px;
+        }
+        .alerts {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
+    <div class="container mt-5">
+        <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Админ-панель</h1>
-            <a href="{{ url_for('admin.logout') }}" class="btn btn-danger">Выйти</a>
+            <h1 class="text-primary">Админ-панель</h1>
+            <a href="{{ url_for('admin.logout') }}" class="btn btn-danger logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Выйти
+            </a>
         </div>
 
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
+                <div class="alerts">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3>Управление ботом</h3>
+        <!-- Management Panel -->
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Состояние бота</h5>
+                        <p class="card-text">
+                            <span class="badge bg-{{ 'success' if bot_active else 'secondary' }}">
+                                {{ 'Активен' if bot_active else 'Неактивен' }}
+                            </span>
+                        </p>
+                        <form action="{{ url_for('admin.toggle_bot') }}" method="post">
+                            <button type="submit" name="action" value="{{ 'stop' if bot_active else 'start' }}" 
+                                    class="btn btn-{{ 'danger' if bot_active else 'success' }} btn-toggle">
+                                {{ 'Остановить бота' if bot_active else 'Запустить бота' }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="d-flex gap-3">
-                    <form action="{{ url_for('admin.toggle_bot') }}" method="POST">
-                        {% if not bot_active %}
-                            <input type="hidden" name="action" value="start">
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-play"></i> Запустить бота
+
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Состояние API</h5>
+                        <p class="card-text">
+                            <span class="badge bg-{{ 'success' if api_active else 'secondary' }}">
+                                {{ 'Активен' if api_active else 'Неактивен' }}
+                            </span>
+                        </p>
+                        <form action="{{ url_for('admin.toggle_api') }}" method="post">
+                            <button type="submit" name="action" value="{{ 'stop' if api_active else 'start' }}" 
+                                    class="btn btn-{{ 'danger' if api_active else 'success' }} btn-toggle">
+                                {{ 'Остановить API' if api_active else 'Запустить API' }}
                             </button>
-                        {% else %}
-                            <input type="hidden" name="action" value="stop">
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-stop"></i> Остановить бота
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Состояние чата</h5>
+                        <p class="card-text">
+                            <span class="badge bg-{{ 'success' if chat_active else 'secondary' }}">
+                                {{ 'Активен' if chat_active else 'Неактивен' }}
+                            </span>
+                        </p>
+                        <form action="{{ url_for('admin.toggle_chat') }}" method="post">
+                            <button type="submit" name="action" value="{{ 'stop' if chat_active else 'start' }}" 
+                                    class="btn btn-{{ 'danger' if chat_active else 'success' }} btn-toggle">
+                                {{ 'Остановить чат' if chat_active else 'Запустить чат' }}
                             </button>
-                        {% endif %}
-                    </form>
-                    
-                    <div class="bot-status ms-3">
-                        Статус бота: 
-                        <span class="badge {% if bot_active %}bg-success{% else %}bg-danger{% endif %}">
-                            {{ 'Работает' if bot_active else 'Остановлен' }}
-                        </span>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

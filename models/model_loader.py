@@ -4,6 +4,14 @@ from models.CNN.CNN import TextCNNModel
 from preprocessing.textpreprocessor import TextPreprocessor
 
 
+from threading import Lock
+
+model_lock = Lock()
+
+def safe_predict(model, data):
+    with model_lock:
+        return model.predict(data)
+    
 vectorizer = HashingVectorizer(n_features=1316)
 
 logistic_regression_model = LogisticRegressionModel()
