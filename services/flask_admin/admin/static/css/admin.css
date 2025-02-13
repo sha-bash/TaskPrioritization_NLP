@@ -1,0 +1,61 @@
+/* admin/static/css/admin.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f0f0f0;
+}
+.dashboard {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.status {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 4px;
+}
+.status.active {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+.status.inactive {
+    background-color: #f2dede;
+    color: #a94442;
+}
+.button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+}
+.start-button {
+    background-color: #4CAF50;
+}
+.stop-button {
+    background-color: #d9534f;
+}
+.logout-button {
+    background-color: #f0ad4e;
+    float: right;
+}
+.button:hover {
+    opacity: 0.8;
+}
+.bot-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1em;
+}
+
+.badge {
+    padding: 0.5em 0.8em;
+    font-size: 0.875em;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
