@@ -1,19 +1,12 @@
 import asyncio
 import logging
 from fastapi import FastAPI
-from services.services_config.config import read_yaml
+from services.fastapi_endpoint.fastapi_app import app
 
-# Конфигурация
-config = read_yaml('services/services_config/config.yaml')
-app = FastAPI()
+
 is_running = False
 api_loop = None
 api_task = None
-
-# Пример маршрута для API
-@app.get("/status")
-async def status():
-    return {"status": "API is running"}
 
 async def start_api():
     global is_running, api_loop, api_task

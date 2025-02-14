@@ -1,11 +1,11 @@
 import os
 import json
 import logging
+import asyncio
 import joblib
 from fastapi import FastAPI, HTTPException
 from preprocessing.textpreprocessor import TextPreprocessor
-import shema
-from lifespan import lifespan
+import services.fastapi_endpoint.shema as shema
 from sklearn.feature_extraction.text import HashingVectorizer
 from models.classic_ml.classic_ml import LogisticRegressionModel, SVMModel, RandomForestModel
 from models.CNN.CNN import TextCNNModel
@@ -25,7 +25,6 @@ from models.model_loader import (
 app = FastAPI(
     title='Сервис для определения приоритета',
     version='2.0.1',
-    lifespan=lifespan,
     description='Сервис использует алгоритмы машинного обучения для формирования предсказания приоритета обращения'
 )
 
@@ -42,6 +41,11 @@ def preprocess_and_vectorize_text(text):
 
     dense_vectorized_text = vectorized_text.toarray()
     return preprocessed_text, dense_vectorized_text
+
+@app.get("/status")
+async def status():
+    return {"status": "API is running"}
+
 
 @app.post('/v1/all_predict', response_model=shema.CreateAllPredictResponse)
 async def add_predict(predict_json: shema.CreatePredictRequest):

@@ -6,7 +6,6 @@ from threading import Thread
 from services.telegram_bot.bot import start_polling, stop_bot, run_bot
 from services.fastapi_endpoint.api_manager import start_api, stop_api, run_api
 import logging
-import numpy as np
 
 
 admin_bp = Blueprint('admin', __name__, 
