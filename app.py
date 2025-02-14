@@ -27,7 +27,6 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 
 # Запуск приложения
 if __name__ == '__main__':
-    # Создаем папку для хранения сессий, если она не существует
     if not os.path.exists(app.config['SESSION_FILE_DIR']):
         os.makedirs(app.config['SESSION_FILE_DIR'])
     

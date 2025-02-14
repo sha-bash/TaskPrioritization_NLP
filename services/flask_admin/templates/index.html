@@ -92,25 +92,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">Состояние чата</h5>
-                        <p class="card-text">
-                            <span class="badge bg-{{ 'success' if chat_active else 'secondary' }}">
-                                {{ 'Активен' if chat_active else 'Неактивен' }}
-                            </span>
-                        </p>
-                        <form action="{{ url_for('admin.toggle_chat') }}" method="post">
-                            <button type="submit" name="action" value="{{ 'stop' if chat_active else 'start' }}" 
-                                    class="btn btn-{{ 'danger' if chat_active else 'success' }} btn-toggle">
-                                {{ 'Остановить чат' if chat_active else 'Запустить чат' }}
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
