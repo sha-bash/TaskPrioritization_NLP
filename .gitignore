@@ -4,3 +4,6 @@ venv
 flasksession
 *.pyc
 __pycache__
+.ipynb_checkpoints
+models/bert/.ipynb_checkpoints
+**/results/

@@ -24,3 +24,7 @@ class CreatePredictResponse(BaseModel):
 
 class CreateCNNPredictResponse(BaseModel):
     CNN_prediction: float
+
+
+class CreateBERTResponse(BaseModel):
+    BERT_predict: str

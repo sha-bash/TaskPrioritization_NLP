@@ -11,7 +11,8 @@ from models.model_loader import (
     svm_model,
     random_forest_model,
     CNN_model,
-    text_preprocessor
+    text_preprocessor,
+    bert_nlp
 )
 
 router = Router()
@@ -35,7 +36,6 @@ def preprocess_and_vectorize_text(text):
     dense_vectorized_text = vectorized_text.toarray()
     return preprocessed_text, dense_vectorized_text
 
-commands = ['all_predict', 'logistic_regression_predict', 'svm_predict', 'random_forest_predict', 'cnn_predict', 'predict']
 
 @router.message(Command("all_predict"))
 @router.message(Command("logistic_regression_predict"))
@@ -43,6 +43,7 @@ commands = ['all_predict', 'logistic_regression_predict', 'svm_predict', 'random
 @router.message(Command("random_forest_predict"))
 @router.message(Command("cnn_predict"))
 @router.message(Command("predict"))
+@router.message(Command("bert_predict"))
 async def start_status(message: types.Message, state: FSMContext):
     command = message.text.strip().lstrip("/") 
     await state.update_data(current_command=command)  
@@ -101,6 +102,17 @@ async def send_prediction_status(message: types.Message, state: FSMContext):
                 response = f'Предположительно молния с вероятностью {probability:.2f}%'
             else:
                 response = f'Не молния. Вероятность {probability:.2f}% слишком мала'
+
+        elif current_command == "bert_predict":
+            bert_prediction = bert_nlp(str(text))
+            for dict_predict in bert_prediction:
+                score = dict_predict['score'] * 100
+                if dict_predict['label'] == 'LABEL_0':
+                    text_bert_prediction = f'Ожидаемый результат: не молния с точностью {score:.2f}%'
+                else:
+                    text_bert_prediction = f'Ожидаемый результат: молния с точностью {score:.2f}%'
+
+            response = text_bert_prediction
 
         else:
             response = "Неизвестная команда. Пожалуйста, выберите одну из доступных команд."

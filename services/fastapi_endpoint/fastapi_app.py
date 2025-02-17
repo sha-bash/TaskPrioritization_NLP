@@ -4,11 +4,7 @@ import logging
 import asyncio
 import joblib
 from fastapi import FastAPI, HTTPException
-from preprocessing.textpreprocessor import TextPreprocessor
 import services.fastapi_endpoint.shema as shema
-from sklearn.feature_extraction.text import HashingVectorizer
-from models.classic_ml.classic_ml import LogisticRegressionModel, SVMModel, RandomForestModel
-from models.CNN.CNN import TextCNNModel
 import numpy as np
 
 logging.basicConfig(level=logging.INFO)
@@ -19,7 +15,8 @@ from models.model_loader import (
     svm_model,
     random_forest_model,
     CNN_model,
-    text_preprocessor
+    text_preprocessor,
+    bert_nlp
 )
 
 app = FastAPI(
@@ -207,8 +204,37 @@ async def add_predict(predict_json: shema.CreatePredictRequest):
         }
 
     except ValueError as ve:
-        logging.error(f"ValueError in /v1/predict: {ve}")
+        logging.error(f"ValueError in /v1/CNN_prediction: {ve}")
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
-        logging.error(f"Error in /v1/predict: {e}")
+        logging.error(f"Error in /v1/CNN_prediction: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+
+@app.post('/v1/bert_prediction', response_model=shema.CreateBERTResponse)
+async def add_predict(predict_json: shema.CreatePredictRequest):
+    try:
+        text = str(predict_json.text)
+        logging.info(f"Received text: {text}")
+
+        bert_prediction = bert_nlp(text)
+        logging.info(f"BERT prediction: {bert_prediction}")
+
+        for dict_predict in bert_prediction:
+            score = dict_predict['score'] * 100
+            if dict_predict['label'] == 'LABEL_0':
+                text_bert_prediction = f'Ожидаемый результат: не молния с точностью {score:.2f}%'
+            else:
+                text_bert_prediction = f'Ожидаемый результат: молния с точностью {score:.2f}%'
+
+
+        return {
+            "BERT_predict": text_bert_prediction,
+        }
+
+    except ValueError as ve:
+        logging.error(f"ValueError in /v1/bert_prediction: {ve}")
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logging.error(f"Error in /v1/bert_prediction: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
