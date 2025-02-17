@@ -6,4 +6,5 @@ flasksession
 __pycache__
 .ipynb_checkpoints
 models/bert/.ipynb_checkpoints
+models/bert/training/saved_model/model.safetensors
 **/results/
